@@ -5,6 +5,23 @@ import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { configOptions } from './functions/Request';
 import { constants } from 'buffer';
 
+
+interface reportStep {
+  step: {
+    expected_answer: string,
+    given_answer: string,
+    groupe_expected_answer: string,
+    groupe_given_answer: string,
+    question: string
+  }
+}
+
+interface gameReport {
+  valide: string,
+  name: string
+  steps: reportStep[]
+}
+
 interface question {
   question: string,
   answers: ('Yes' | 'No' | 'Don\'t Know' | 'Probably' | 'Probably not' | string)[]
@@ -247,6 +264,51 @@ export default class Akinator {
     } else {
       throw new AkinatorAPIError(result, this.region);
     }
+  }
+
+  /**
+   * Make a choice amongst the possibilities, ends the game.
+   */
+  async choice(element: string) {
+    if (!this.uri || !this.urlApiWs) throw new Error(noUriMsg);
+    if (!this.uriObj || !this.signature || !this.session) throw new Error(noSessionMsg);
+
+    const query = new URLSearchParams({
+      callback: jQuery + new Date().getTime(),
+      signature: this.signature,
+      session: this.session,
+      element
+    })
+
+    const url = `${this.urlApiWs}/choice?${query.toString()}`;
+    const result = await request(url, 'element_informations', this.region, this.config);
+    if (result instanceof AkinatorAPIError) {
+      throw result;
+    }
+  }
+
+  /**
+   * End the game.
+   */
+  async report(): Promise<any> {
+    if (!this.uri || !this.urlApiWs) throw new Error(noUriMsg);
+    if (!this.uriObj || !this.signature || !this.session) throw new Error(noSessionMsg);
+
+    const query = new URLSearchParams({
+      callback: jQuery + new Date().getTime(),
+      signature: this.signature,
+      session: this.session
+    })
+
+    const url = `${this.urlApiWs}/report?${query.toString()}`;
+    const result = await request(url, 'name', this.region, this.config);
+    if (result instanceof AkinatorAPIError) {
+      throw result;
+    }
+
+    const { parameters } = result;
+
+    return parameters
   }
 
   /**

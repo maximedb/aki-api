@@ -29,7 +29,9 @@ const testGame = async (region: region, childMode?: boolean) => {
 
 
   const result = await aki.win();
-  console.log('win:', result.guesses);
+  // console.log('win:', result.guesses);
+  await aki.choice(result.guesses[0].id)
+  await aki.report()
 };
 
 (async () => {
