@@ -30,6 +30,7 @@
     "url": "git+https://github.com/jgoralcz/aki-api.git"
   },
   "scripts": {
+    "prepare" : "npm run build",
     "start": "npx ts-node src/",
     "eslint": "eslint . --ext .ts",
     "build": "tsc",

@@ -188,7 +188,6 @@ export type configOptions = {
 // example output: jQuery331023608747682107778_1615444627875({"completion":"OK","parameters":{"identification":{"channel":0,"session":"459","signature":"223731835","challenge_auth":"8ebe521c-5991-4625-b081-6066352649e5"},"step_information":{"question":"Does your character really exist?","answers":[{"answer":"Yes"},{"answer":"No"},{"answer":"Don't know"},{"answer":"Probably"},{"answer":"Probably not"}],"step":"0","progression":"0.00000","questionid":"266","infogain":"0.607602"}}}
 export const request = async (url: string, checkParamProperty: checkParamProperty, region: region, config: configOptions): Promise<AkinatorAPIError | AkinatorResult> => {
   const axiosConfig = (config || {}) as AxiosRequestConfig;
-  console.log(url)
 
   const { status, data } = await axios.get<number, AkinatorPromise>(url, { headers, params, ...axiosConfig });
 
@@ -199,13 +198,10 @@ export const request = async (url: string, checkParamProperty: checkParamPropert
   const beginningParse = data.indexOf('(');
   const jsonString = data.substring(beginningParse + 1, data.length - 1);
   const result: AkinatorResult = JSON.parse(jsonString);
-  console.log("data", data)
-  console.log(result)
+
   if (!result || result.completion != 'OK' || !(checkParamProperty in result.parameters)) {
-    console.log("here")
     throw new AkinatorAPIError(result, region);
   }
-
   return result;
 };
 
